@@ -2,7 +2,7 @@
 echo "Cloning dependencies"
 rm -rf AnyKernel
 git clone --depth=1 https://github.com/kdrag0n/proton-clang clang
-git clone --depth=1 https://github.com/App-tester-ANAGHA/AnyKernel3.git -b RMX1971 AnyKernel
+git clone --depth=1 https://github.com/K3M13/AnyKernel3.git -b RMX1851 AnyKernel3
 git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 los-4.9-64
 git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 los-4.9-32
 echo "Done"
@@ -14,44 +14,11 @@ PATH="${PWD}/clang/bin:$PATH"
 export KBUILD_COMPILER_STRING="$(${KERNEL_DIR}/clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 export ARCH=arm64
 export KBUILD_BUILD_HOST=NexLTS
-export KBUILD_BUILD_USER="App_tester_ANAGHA"
-# sticker plox
-function sticker() {
-    curl -s -X POST "https://api.telegram.org/bot$token/sendSticker" \
-        -d sticker="CAACAgEAAxkBAAEnKnJfZOFzBnwC3cPwiirjZdgTMBMLRAACugEAAkVfBy-aN927wS5blhsE" \
-        -d chat_id=$chat_id
-}
-# Send info plox channel
-function sendinfo() {
-    curl -s -X POST "https://api.telegram.org/bot$token/sendMessage" \
-        -d chat_id="$chat_id" \
-        -d "disable_web_page_preview=true" \
-        -d "parse_mode=html" \
-        -d text="<b>Test Kernel</b>%0ABuild started on <code>NexLTS</code>%0AFor device <b>Realme 5 Pro</b> (r5p)%0Abranch <code>$(git rev-parse --abbrev-ref HEAD)</code> (master)%0AUnder commit <code>$(git log --pretty=format:'"%h : %s"' -1)</code>%0AUsing compiler: <code>${KBUILD_COMPILER_STRING}</code>%0AStarted on <code>$(date)</code>%0A<b>Build Status:</b> Beta"
-}
-# Push kernel to channel
-function push() {
-    cd AnyKernel
-    ZIP=$(echo *.zip)
-    curl -F document=@$ZIP "https://api.telegram.org/bot$token/sendDocument" \
-        -F chat_id="$chat_id" \
-        -F "disable_web_page_preview=true" \
-        -F "parse_mode=html" \
-        -F caption="Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s). | For <b>Realme 5 Pro (r5p)</b> | <b>$(${GCC}gcc --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')</b>"
-}
-# Fin Error
-function finerr() {
-    curl -s -X POST "https://api.telegram.org/bot$token/sendMessage"
-        -d chat_id="$chat_id" \
-        -d "disable_web_page_preview=true" \
-        -d "parse_mode=markdown" \
-        -d text="Build throw an error(s)"
-    exit 1
-}
+export KBUILD_BUILD_USER="K3M13"
 # Compile plox
 function compile() {
 
-    make O=out ARCH=arm64 RMX1971_defconfig
+    make O=out ARCH=arm64 RMX1851_defconfig
     make -j$(nproc --all) O=out \
                           ARCH=arm64 \
 			  CC=clang \
@@ -62,12 +29,12 @@ function compile() {
         finerr
         exit 1
     fi
-    cp out/arch/arm64/boot/Image.gz-dtb AnyKernel
+    cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3
 }
 # Zipping
 function zipping() {
     cd AnyKernel || exit 1
-    zip -r9 NexLTS-realme_sdm710-${TANGGAL}.zip *
+    zip -r9 Realme_sdm710_LTS-${TANGGAL}.zip *
     cd ..
 }
 sendinfo
